@@ -11,7 +11,6 @@ class HealthCheckTestCase(unittest.TestCase):
         self.client = self.app.test_client()
         
         with self.app.app_context():
-            db.drop_all()
             db.create_all()
 
     def tearDown(self):
@@ -23,8 +22,8 @@ class HealthCheckTestCase(unittest.TestCase):
     def test_health_check_creation(self):
         """Test if a HealthCheck record can be created"""
         with self.app.app_context():
-            entry = HealthCheck(datetime=datetime.utcnow())
-            db.session.add(entry)
+            health_entry = HealthCheck(datetime=datetime.utcnow())
+            db.session.add(health_entry)
             db.session.commit()
             
             result = HealthCheck.query.first()

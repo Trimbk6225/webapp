@@ -6,9 +6,15 @@ from flask_migrate import Migrate
 migrate = Migrate()  # Create a Migrate instance
 
 
-def create_app():
+def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object("app.config.Config")
+
+    if config_name == "testing":
+        app.config["TESTING"] = True
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"  # In-memory DB for testing
+        app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 
     # Initialize database
     db.init_app(app)
