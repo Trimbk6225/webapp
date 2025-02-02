@@ -23,6 +23,6 @@ def health_check():
 
     return response
 
-@health_check_blueprint.route("/healthz", methods=["POST", "PUT", "DELETE", "PATCH"])
+@health_check_blueprint.route("/healthz", methods=["POST", "PUT", "DELETE", "PATCH","HEAD","OPTIONS"])
 def method_not_allowed():
     return make_response("", 405)  # Method Not Allowed
