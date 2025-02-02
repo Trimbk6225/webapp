@@ -31,15 +31,26 @@ class HealthCheckTestCase(unittest.TestCase):
             self.assertIsNotNone(result)
             self.assertIsInstance(result.datetime, datetime)
 
+    # def test_database_connection(self):
+    #     """Test if the application can connect to MySQL/PostgreSQL"""
+    #     with self.app.app_context():
+    #         try:
+    #             # Use text() to explicitly declare the SQL statement
+    #             result = db.session.execute(text("SELECT 1"))
+    #             print(result, result.scalar())
+    #             self.assertEqual(result.scalar(), 1)
+    #         except Exception as e:
+    #             self.fail(f"Database connection failed: {str(e)}")
     def test_database_connection(self):
         """Test if the application can connect to MySQL/PostgreSQL"""
         with self.app.app_context():
-            try:
-                # Use text() to explicitly declare the SQL statement
-                result = db.session.execute(text("SELECT 1"))
-                print(result, result.scalar())
-                self.assertEqual(result.scalar(), 1)
-            except Exception as e:
+           try:
+               # Fetch the first row properly before calling .scalar()
+                result = db.session.execute(text("SELECT 1")).fetchone()
+                print("Database connection test result:", result)  # Debug print
+                self.assertIsNotNone(result)
+                self.assertEqual(result[0], 1)  # Access first column value safely
+           except Exception as e:
                 self.fail(f"Database connection failed: {str(e)}")
 
     def test_get_method_allowed(self):
