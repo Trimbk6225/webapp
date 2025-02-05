@@ -4,8 +4,6 @@ set -e # Stop execution immediately if any command fail
 
 # Collect user input
 read -p "Provide the zip file name without extension: " PROJECT_NAME
-read -p "Specify the MySQL username: " MYSQL_USER
-read -s -p "Enter the MySQL password: " MYSQL_PASSWORD
 echo
 
 # Define variables
@@ -13,26 +11,9 @@ APP_GROUP="myappgroup"  # Linux group assigned for the application
 ZIP_FILE="$PROJECT_NAME.zip"
 DB_NAME="healthcheckdb"  # Updated as per config.py
 APP_USER="myappuser"  # Linux user assigned for application
-APP_DIR="/opt/myapp"  # Directory where the application will be deployed
-
-# Function to set up swap memory
-memory_swap() {
-    echo "Setting up swap memory..."
-    if ! sudo swapon --show | grep -q swapfile; then
-        sudo fallocate -l 1G /swapfile
-        sudo chmod 600 /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
-        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-    else
-        echo "Swap memory already configured."
-    fi
-}
+APP_DIR="/opt/csye6225"  # Directory where the application will be deployed
 
 echo "Initiating setup process..."
-
-# 1. Enable swap space
-memory_swap
 
 # 2. Install necessary dependencies
 echo "Updating system and installing dependencies..."
@@ -41,6 +22,10 @@ sudo apt update && sudo apt install -y unzip python3-pip python3-venv pkg-config
 # 3. Configure MySQL database and user
 echo "Setting up MySQL database and user account..."
 sudo systemctl restart mysql
+
+read -p "Specify the MySQL username: " MYSQL_USER
+read -s -p "Enter the MySQL password: " MYSQL_PASSWORD
+echo 
 
 # Secure MySQL setup and grant permissions
 sudo mysql --defaults-file=/etc/mysql/debian.cnf <<EOF
@@ -98,11 +83,9 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 # 11. Set up the database for Flask
-flask db init 
-flask db migrate -m "Initial setup migration"
+flask db init || echo "done"
+flask db migrate -m "Initial setup migration" || echo "done"
 flask db upgrade
 
 # 12. Launch Flask application
-sudo -u $APP_USER bash -c "source $WEBAPP_DIR/venv/bin/activate && flask run"
-
-echo "Deployment successfully completed!"
+sudo -u $APP_USER bash -c "source $WEBAPP_DIR/venv/bin/activate && flask run --host=0.0.0.0 --port=5000"
