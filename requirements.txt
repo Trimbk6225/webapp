@@ -4,3 +4,4 @@ Flask-Migrate==4.1.0
 PyMySQL
 python-dotenv==1.0.1
 cryptography
+pytest
