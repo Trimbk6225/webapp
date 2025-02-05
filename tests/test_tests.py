@@ -31,16 +31,6 @@ class HealthCheckTestCase(unittest.TestCase):
             self.assertIsNotNone(result)
             self.assertIsInstance(result.datetime, datetime)
 
-    # def test_database_connection(self):
-    #     """Test if the application can connect to MySQL/PostgreSQL"""
-    #     with self.app.app_context():
-    #         try:
-    #             # Use text() to explicitly declare the SQL statement
-    #             result = db.session.execute(text("SELECT 1"))
-    #             print(result, result.scalar())
-    #             self.assertEqual(result.scalar(), 1)
-    #         except Exception as e:
-    #             self.fail(f"Database connection failed: {str(e)}")
     def test_database_connection(self):
         """Test if the application can connect to MySQL/PostgreSQL"""
         with self.app.app_context():
@@ -96,6 +86,7 @@ class HealthCheckTestCase(unittest.TestCase):
 
     def test_no_query_params_in_request(self):
         """Test that the request does not require any query parameters"""
+        
         response = self.client.get('/healthz')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, b'')  # Ensure no query params required
