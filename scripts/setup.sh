@@ -9,6 +9,7 @@ echo
 # Define variables
 APP_GROUP="myappgroup"  # Linux group assigned for the application
 ZIP_FILE="$PROJECT_NAME.zip"
+TEST_DB_NAME="healthcheckdb_test" # Testing database
 DB_NAME="healthcheckdb"  # Updated as per config.py
 APP_USER="myappuser"  # Linux user assigned for application
 APP_DIR="/opt/csye6225"  # Directory where the application will be deployed
@@ -18,6 +19,7 @@ echo "Initiating setup process..."
 # 2. Install necessary dependencies
 echo "Updating system and installing dependencies..."
 sudo apt update && sudo apt install -y unzip python3-pip python3-venv pkg-config mysql-server
+sudo apt upgrade
 
 # 3. Configure MySQL database and user
 echo "Setting up MySQL database and user account..."
@@ -34,6 +36,7 @@ FLUSH PRIVILEGES;
 CREATE DATABASE IF NOT EXISTS ${DB_NAME};
 CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';
 GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${MYSQL_USER}'@'localhost';
+GRANT ALL PRIVILEGES ON ${TEST_DB_NAME}.* TO '${MYSQL_USER}'@'localhost'; -- Grant permissions for testing DB
 FLUSH PRIVILEGES;
 EOF
 
@@ -82,10 +85,5 @@ EOL
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# 11. Set up the database for Flask
-flask db init || echo "done"
-flask db migrate -m "Initial setup migration" || echo "done"
-flask db upgrade
-
-# 12. Launch Flask application
+# 11. Launch Flask application
 sudo -u $APP_USER bash -c "source $WEBAPP_DIR/venv/bin/activate && flask run --host=0.0.0.0 --port=5000"
