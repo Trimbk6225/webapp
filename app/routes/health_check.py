@@ -13,7 +13,6 @@ def health_check():
 
     # Insert record
     if insert_health_check():
-        
         response = make_response("", 200)
     else:
         response = make_response("", 504)  # Service Unavailable
