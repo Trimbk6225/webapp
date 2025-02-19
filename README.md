@@ -36,3 +36,9 @@ for Assignment 2
   scp ~/folderpathforzipfile root@IPADRESSS:/home/
   scp ~/folderpathfor.shfile root@IPADRESSS:/home/
 
+  For assignmrnt 3 :- 
+  I created the workflow
+
+
+
+
