@@ -21,3 +21,24 @@ Terminal commands :- {
 There is also .env file in which the some credential are required to connet database are mentioned in this file.
 so, this file will locally pasted or made at that time  will running the app.
 
+for Assignment 2
+ I need 6$ plan of digital occean 
+ commands to run the applications 
+ ubuntu
+ ssh root@IPADRESS
+ after local terminal send the file:-
+  cd ..
+  cd home
+  chmod +x setup.sh
+  ./setup.sh
+
+  local terminal :-
+  scp ~/folderpathforzipfile root@IPADRESSS:/home/
+  scp ~/folderpathfor.shfile root@IPADRESSS:/home/
+
+  For assignmrnt 3 :- 
+  I created the workflow
+
+
+
+

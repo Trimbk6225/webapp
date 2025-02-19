@@ -1,12 +1,15 @@
 import unittest
+from unittest.mock import patch
 from app import create_app
 from app.utils.db import db
 from app.models.health_check import HealthCheck
 from datetime import datetime, UTC
 from sqlalchemy import text, create_engine
-from app.config import TestConfig
+from app.config import TestConfig 
+
 
 class HealthCheckTestCase(unittest.TestCase):
+    
     
     @classmethod
     def setUpClass(cls):
@@ -119,6 +122,22 @@ class HealthCheckTestCase(unittest.TestCase):
         
         response_2 = self.client.get('/healthz')
         self.assertEqual(response_2.status_code, 200)
+
+    @patch('app.routes.health_check.insert_health_check', return_value=False)
+    def test_service_unavailable(self, mock_insert_health_check):
+        """Test if the service returns a 503 status code when it's unavailable"""
+        
+        # Ensure the mock is being applied correctly
+        print("Mock is patched and should return False")
+        
+        # Perform the health check request
+        response = self.client.get('/healthz')
+
+        # Check the status code should be 503 as the insert_health_check returns False
+        self.assertEqual(response.status_code, 503)
+
+        # Ensure insert_health_check was actually called
+        mock_insert_health_check.assert_called_once()
 
 if __name__ == "__main__":
     unittest.main()
