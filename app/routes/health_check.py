@@ -15,7 +15,7 @@ def health_check():
     if insert_health_check():
         response = make_response("", 200)
     else:
-        response = make_response("", 504)  # Service Unavailable
+        response = make_response("", 503)  # Service Unavailable
 
     # Add headers
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate;"
