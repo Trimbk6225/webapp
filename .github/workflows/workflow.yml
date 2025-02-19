@@ -1,0 +1,71 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install System Dependencies  
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y python3-pip 
+
+      - name: Install Python libraries
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Configure MySQL Database
+        env:
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          MYSQL_DEFAULT_USER: ${{ secrets.MYSQL_DEFAULT_USER }}
+          MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
+        run: |
+          sudo service mysql start
+
+          # Create main and test databases
+          mysql -u $MYSQL_DEFAULT_USER-p$MYSQL_DEFAULT_PASSWORD -e"CREATE DATABASE IF NOT EXISTS $DATABASE_NAME;"
+          mysql -u $MYSQL_DEFAULT_USER-p$MYSQL_DEFAULT_PASSWORD -e"CREATE DATABASE IF NOT EXISTS test_$DATABASE_NAME;"
+
+          # Create a MySQL user and grant privileges
+          mysql -u $MYSQL_DEFAULT_USER-p$MYSQL_DEFAULT_PASSWORD -e"CREATE USER IF NOT EXISTS '$DATABASE_USERNAME'@'$DATABASE_HOST' IDENTIFIED BY '$DATABASE_PASSWORD';"
+          mysql -u $MYSQL_DEFAULT_USER-p$MYSQL_DEFAULT_PASSWORD -e"GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST';"
+          mysql -u $MYSQL_DEFAULT_USER-p$MYSQL_DEFAULT_PASSWORD -e"GRANT ALL PRIVILEGES ON test_$DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST';"
+          mysql -u $MYSQL_DEFAULT_USER-p$MYSQL_DEFAULT_PASSWORD -e"FLUSH PRIVILEGES;"
+
+      - name: Generate .env File
+        env:
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        run: |
+          echo "DATABASE_USERNAME=$DATABASE_USERNAME" > .env
+          echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
+          echo "DATABASE_HOST=$DATABASE_HOST" >> .env
+          echo "DATABASE_NAME=test_$DATABASE_NAME" >> .env
+          echo "DATABASE_PORT=$DATABASE_PORT" >> .env
+
+      - name: Execute Tests with Pytest
+        run: |
+          python -m pytest tests/
