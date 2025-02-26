@@ -84,6 +84,8 @@ jobs:
         DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
         MYSQL_DEFAULT_USER: ${{ secrets.MYSQL_DEFAULT_USER }}
         MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
+        MYSQL_ROOT_USER: ${{secrets.MYSQL_ROOT_USER}}
+        MYSQL_ROOT_PASS: ${{secrets.MYSQL_ROOT_PASSWORD}}
         
     steps:
       - name: Checkout Code
@@ -106,8 +108,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_REGION: ${{secrets.AWS_REGION}}
-          MYSQL_ROOT_USER: ${{secrets.MYSQL_DEFAULT_USER}}
-          MYSQL_ROOT_PASS: ${{secrets.MYSQL_DEFAULT_PASSWORD}}
+          MYSQL_ROOT_USER: ${{secrets.MYSQL_ROOT_USER}}
+          MYSQL_ROOT_PASS: ${{secrets.MYSQL_ROOT_PASSWORD}}
           DEV_USER: ${{secrets.DEV_USER}}
           DEMO_USER: ${{secrets.DEMO_USER}}
           SOURCE_AMI: ${{secrets.SOURCE_AMI}}
