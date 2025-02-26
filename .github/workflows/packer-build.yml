@@ -114,20 +114,23 @@ jobs:
           INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
           SSH_USERNAME: ${{secrets.SSH_USERNAME}}
         run: |
-          echo -e 'DATABASE_USERNAME="$DATABASE_USERNAME"\n' >> tj.pkrvars.hcl
-          echo -e 'DATABASE_PASSWORD="$DATABASE_PASSWORD"\n' >> tj.pkrvars.hcl
-          echo -e 'DATABASE_HOST="$DATABASE_HOST"\n' >> tj.pkrvars.hcl
-          echo -e 'DATABASE_NAME="$DATABASE_NAME"\n' >> tj.pkrvars.hcl
-          echo -e 'AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"\n' >> tj.pkrvars.hcl
-          echo -e 'AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"\n' >> tj.pkrvars.hcl
-          echo -e 'AWS_REGION="$AWS_REGION"\n' >> tj.pkrvars.hcl
-          echo -e 'MYSQL_ROOT_USER="$MYSQL_ROOT"\n' >> tj.pkrvars.hcl
-          echo -e 'MYSQL_ROOT_PASS="$MYSQL_ROOT_PAS"\n' >> tj.pkrvars.hcl
-          echo -e 'DEV_USER="$DEV_USER"\n' >> tj.pkrvars.hcl
-          echo -e 'DEMO_USER="$DEMO_USER"\n' >> tj.pkrvars.hcl
-          echo -e 'SOURCE_AMI="$ami-SOURCE_AMI"\n' >> tj.pkrvars.hcl
-          echo -e 'INSTANCE_TYPE="$INSTANCE_TYPE"\n' >> tj.pkrvars.hcl
-          echo -e 'SSH_USERNAME="$SH_USERNAME"\n' >> tj.pkrvars.hcl
+          cat <<EOF > tj.pkrvars.hcl
+          DATABASE_USERNAME = "$DATABASE_USERNAME"
+          DATABASE_PASSWORD = "$DATABASE_PASSWORD"
+          DATABASE_HOST = "$DATABASE_HOST"
+          DATABASE_NAME = "$DATABASE_NAME"
+          AWS_ACCESS_KEY_ID = "$AWS_ACCESS_KEY_ID"
+          AWS_SECRET_ACCESS_KEY = "$AWS_SECRET_ACCESS_KEY"
+          AWS_REGION = "$AWS_REGION"
+          MYSQL_ROOT_USER = "$MYSQL_ROOT_USER"
+          MYSQL_ROOT_PASS = "$MYSQL_ROOT_PASS"
+          DEV_USER = "$DEV_USER"
+          DEMO_USER = "$DEMO_USER"
+          SOURCE_AMI = "$SOURCE_AMI"
+          INSTANCE_TYPE = "$INSTANCE_TYPE"
+          SSH_USERNAME = "$SSH_USERNAME"
+          EOF
+
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
