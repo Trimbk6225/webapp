@@ -18,6 +18,8 @@ jobs:
         DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
         MYSQL_DEFAULT_USER: ${{ secrets.MYSQL_DEFAULT_USER }}
         MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
+
+        
         
     steps:
       - name: Checkout Code
@@ -75,20 +77,20 @@ jobs:
           INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
           SSH_USERNAME: ${{secrets.SSH_USERNAME}}
         run:
-          echo 'DATABASE_USERNAME="$DATABASE_USERNAME"' >> tj.pkrvars.hcl
-          echo 'DATABASE_PASSWORD="$DATABASE_PASSWORD"' >> tj.pkrvars.hcl
-          echo 'DATABASE_HOST="$DATABASE_HOST"' >> tj.pkrvars.hcl
-          echo 'DATABASE_NAME="$DATABASE_NAME"' >> tj.pkrvars.hcl
-          echo 'AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"' >> tj.pkrvars.hcl
-          echo 'AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"' >> tj.pkrvars.hcl
-          echo 'AWS_REGION="$AWS_REGION"' >> tj.pkrvars.hcl
-          echo 'MYSQL_ROOT_USER="$MYSQL_ROOT"' >> tj.pkrvars.hcl
-          echo 'MYSQL_ROOT_PASS="$MYSQL_ROOT_PAS"' >> tj.pkrvars.hcl
-          echo 'DEV_USER="$DEV_USER"' >> tj.pkrvars.hcl
-          echo 'DEMO_USER="$DEMO_USER"' >> tj.pkrvars.hcl
-          echo 'SOURCE_AMI="$ami-SOURCE_AMI"' >> tj.pkrvars.hcl
-          echo 'INSTANCE_TYPE="$INSTANCE_TYPE"' >> tj.pkrvars.hcl
-          echo 'SSH_USERNAME="$SH_USERNAME"' >> tj.pkrvars.hcl
+          echo 'DATABASE_USERNAME = "'"$DATABASE_USERNAME"'"' > tj.pkrvars.hcl
+          echo 'DATABASE_PASSWORD = "'"$DATABASE_PASSWORD"'"' >> tj.pkrvars.hcl
+          echo 'DATABASE_HOST = "'"$DATABASE_HOST"'"' >> tj.pkrvars.hcl
+          echo 'DATABASE_NAME = "'"$DATABASE_NAME"'"' >> tj.pkrvars.hcl
+          echo 'AWS_ACCESS_KEY_ID = "'"$AWS_ACCESS_KEY_ID"'"' >> tj.pkrvars.hcl
+          echo 'AWS_SECRET_ACCESS_KEY = "'"$AWS_SECRET_ACCESS_KEY"'"' >> tj.pkrvars.hcl
+          echo 'AWS_REGION = "'"$AWS_REGION"'"' >> tj.pkrvars.hcl
+          echo 'MYSQL_ROOT_USER = "'"$MYSQL_ROOT_USER"'"' >> tj.pkrvars.hcl
+          echo 'MYSQL_ROOT_PASS = "'"$MYSQL_ROOT_PASS"'"' >> tj.pkrvars.hcl
+          echo 'DEV_USER = "'"$DEV_USER"'"' >> tj.pkrvars.hcl
+          echo 'DEMO_USER = "'"$DEMO_USER"'"' >> tj.pkrvars.hcl
+          echo 'SOURCE_AMI = "'"$SOURCE_AMI"'"' >> tj.pkrvars.hcl
+          echo 'INSTANCE_TYPE = "'"$INSTANCE_TYPE"'"' >> tj.pkrvars.hcl
+          echo 'SSH_USERNAME = "'"$SSH_USERNAME"'"' >> tj.pkrvars.hcl
 
 
       - name: Run `packer init`
