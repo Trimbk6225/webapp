@@ -113,7 +113,7 @@ jobs:
           SOURCE_AMI: ${{secrets.SOURCE_AMI}}
           INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
           SSH_USERNAME: ${{secrets.SSH_USERNAME}}
-        run:
+        run: |
           echo -e 'DATABASE_USERNAME="$DATABASE_USERNAME"\n' >> tj.pkrvars.hcl
           echo -e 'DATABASE_PASSWORD="$DATABASE_PASSWORD"\n' >> tj.pkrvars.hcl
           echo -e 'DATABASE_HOST="$DATABASE_HOST"\n' >> tj.pkrvars.hcl
