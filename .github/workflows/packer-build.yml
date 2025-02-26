@@ -1,0 +1,169 @@
+name: Packer Build
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  test-ami:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install System Dependencies  
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y python3-pip 
+
+      - name: Install Python libraries
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Configure MySQL Database
+        env:
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          MYSQL_DEFAULT_USER: ${{ secrets.MYSQL_DEFAULT_USER }}
+          MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
+        run: |
+          sudo service mysql start
+
+          # Create main and test databases
+          mysql -u $MYSQL_DEFAULT_USER -p$MYSQL_DEFAULT_PASSWORD -e"CREATE DATABASE IF NOT EXISTS $DATABASE_NAME;"
+          mysql -u $MYSQL_DEFAULT_USER -p$MYSQL_DEFAULT_PASSWORD -e"CREATE DATABASE IF NOT EXISTS test_$DATABASE_NAME;"
+
+          # Create a MySQL user and grant privileges
+          mysql -u $MYSQL_DEFAULT_USER -p$MYSQL_DEFAULT_PASSWORD -e"CREATE USER IF NOT EXISTS '$DATABASE_USERNAME'@'$DATABASE_HOST' IDENTIFIED BY '$DATABASE_PASSWORD';"
+          mysql -u $MYSQL_DEFAULT_USER -p$MYSQL_DEFAULT_PASSWORD -e"GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST' WITH GRANT OPTION;"
+          mysql -u $MYSQL_DEFAULT_USER -p$MYSQL_DEFAULT_PASSWORD -e"GRANT ALL PRIVILEGES ON test_$DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST' WITH GRANT OPTION;"
+          mysql -u $MYSQL_DEFAULT_USER -p$MYSQL_DEFAULT_PASSWORD -e"FLUSH PRIVILEGES;"
+
+      - name: Generate .env File
+        env:
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        run: |
+          echo "DATABASE_USERNAME=$DATABASE_USERNAME" > .env
+          echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
+          echo "DATABASE_HOST=$DATABASE_HOST" >> .env
+          echo "DATABASE_NAME=test_$DATABASE_NAME" >> .env
+          echo "DATABASE_PORT=$DATABASE_PORT" >> .env
+
+      - name: Execute Tests with Pytest
+        run: |
+          python -m pytest tests/
+
+
+  build-ami:
+    needs: test-ami
+    runs-on: ubuntu-latest
+    name: Packer Build
+    env:
+        DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        MYSQL_DEFAULT_USER: ${{ secrets.MYSQL_DEFAULT_USER }}
+        MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
+        
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Install Packer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          curl -LO https://releases.hashicorp.com/packer/1.11.2/packer_1.11.2_linux_amd64.zip
+          unzip packer_1.11.2_linux_amd64.zip
+          sudo mv packer /usr/local/bin/
+          packer --version
+      - name: Generate .env File
+        env:
+          DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME}}
+          DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          DATABASE_HOST: ${{secrets.DATABASE_HOST}}
+          DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_REGION: ${{secrets.AWS_REGION}}
+          MYSQL_ROOT_USER: ${{secrets.MYSQL_DEFAULT_USER}}
+          MYSQL_ROOT_PASS: ${{secrets.MYSQL_DEFAULT_PASSWORD}}
+          DEV_USER: ${{secrets.DEV_USER}}
+          DEMO_USER: ${{secrets.DEMO_USER}}
+          SOURCE_AMI: ${{secrets.SOURCE_AMI}}
+          INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
+          SSH_USERNAME: ${{secrets.SSH_USERNAME}}
+        run: |
+          echo -e 'DATABASE_USERNAME="$DATABASE_USERNAME"\n' >> tj.pkrvars.hcl
+          echo -e 'DATABASE_PASSWORD="$DATABASE_PASSWORD"\n' >> tj.pkrvars.hcl
+          echo -e 'DATABASE_HOST="$DATABASE_HOST"\n' >> tj.pkrvars.hcl
+          echo -e 'DATABASE_NAME="$DATABASE_NAME"\n' >> tj.pkrvars.hcl
+          echo -e 'AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"\n' >> tj.pkrvars.hcl
+          echo -e 'AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"\n' >> tj.pkrvars.hcl
+          echo -e 'AWS_REGION="$AWS_REGION"\n' >> tj.pkrvars.hcl
+          echo -e 'MYSQL_ROOT_USER="$MYSQL_ROOT"\n' >> tj.pkrvars.hcl
+          echo -e 'MYSQL_ROOT_PASS="$MYSQL_ROOT_PAS"\n' >> tj.pkrvars.hcl
+          echo -e 'DEV_USER="$DEV_USER"\n' >> tj.pkrvars.hcl
+          echo -e 'DEMO_USER="$DEMO_USER"\n' >> tj.pkrvars.hcl
+          echo -e 'SOURCE_AMI="$ami-SOURCE_AMI"\n' >> tj.pkrvars.hcl
+          echo -e 'INSTANCE_TYPE="$INSTANCE_TYPE"\n' >> tj.pkrvars.hcl
+          echo -e 'SSH_USERNAME="$SH_USERNAME"\n' >> tj.pkrvars.hcl
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{secrets.AWS_REGION}}
+
+      - name: Create webapp.zip from existing directory
+        run: |
+          zip -r webapp.zip .
+        shell: bash
+
+      - name: Generate .env File
+        env:
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        run: |
+          echo "DATABASE_USERNAME=$DATABASE_USERNAME" >>.env
+          echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
+          echo "DATABASE_HOST=$DATABASE_HOST" >> .env
+          echo "DATABASE_NAME=test_$DATABASE_NAME" >> .env
+          echo "DATABASE_PORT=$DATABASE_PORT" >> .env
+
+
+      - name: Run `packer init`
+        id: init
+        run: "packer init ."
+
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate -var-file=tj.pkvars.hcl ."
+
+      - name: ami create
+        run: "packer build -var-file=tj.pkvars.hcl ."
+          
