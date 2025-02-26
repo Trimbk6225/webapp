@@ -1,0 +1,100 @@
+name: Packer check
+
+on:
+  pull_request:
+    branches:
+      - main
+   
+   
+jobs:
+  test:
+    name: Packer Workflow
+    runs-on: ubuntu-latest
+    env:
+        DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        MYSQL_DEFAULT_USER: ${{ secrets.MYSQL_DEFAULT_USER }}
+        MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
+        
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Install Packer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          curl -LO https://releases.hashicorp.com/packer/1.11.2/packer_1.11.2_linux_amd64.zip
+          unzip packer_1.11.2_linux_amd64.zip
+          sudo mv packer /usr/local/bin/
+          packer --version
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{secrets.AWS_REGION}}
+
+      - name: Create webapp.zip from existing directory
+        run: |
+          zip -r webapp.zip .
+        shell: bash
+
+      - name: Generate .env File
+        env:
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        run: |
+          echo "DATABASE_USERNAME=$DATABASE_USERNAME" > .env
+          echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
+          echo "DATABASE_HOST=$DATABASE_HOST" >> .env
+          echo "DATABASE_NAME=test_$DATABASE_NAME" >> .env
+          echo "DATABASE_PORT=$DATABASE_PORT" >> .env
+
+      - name: Generate .env File
+        env:
+          DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME}}
+          DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          DATABASE_HOST: ${{secrets.DATABASE_HOST}}
+          DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+          AWS_ACCESS_KEY_ID: ${{secrets. AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_REGION: ${{secrets.AWS_REGION}}
+          MYSQL_ROOT_USER: ${{secrets.MYSQL_DEFAULT_USER}}
+          MYSQL_ROOT_PASS: ${{secrets.MYSQL_DEFAULT_PASSWORD}}
+          DEV_USER: ${{secrets.DEV_USER}}
+          DEMO_USER: ${{secrets.DEMO_USER}}
+          SOURCE_AMI: ${{secrets.SOURCE_AMI}}
+          INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
+          SSH_USERNAME: ${{secrets.SSH_USERNAME}}
+        run:
+          echo 'DATABASE_USERNAME="$DATABASE_USERNAME"' >> tj.pkrvars.hcl
+          echo 'DATABASE_PASSWORD="$DATABASE_PASSWORD"' >> tj.pkrvars.hcl
+          echo 'DATABASE_HOST="$DATABASE_HOST"' >> tj.pkrvars.hcl
+          echo 'DATABASE_NAME="$DATABASE_NAME"' >> tj.pkrvars.hcl
+          echo 'AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"' >> tj.pkrvars.hcl
+          echo 'AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"' >> tj.pkrvars.hcl
+          echo 'AWS_REGION="$AWS_REGION"' >> tj.pkrvars.hcl
+          echo 'MYSQL_ROOT_USER="$MYSQL_ROOT"' >> tj.pkrvars.hcl
+          echo 'MYSQL_ROOT_PASS="$MYSQL_ROOT_PAS"' >> tj.pkrvars.hcl
+          echo 'DEV_USER="$DEV_USER"' >> tj.pkrvars.hcl
+          echo 'DEMO_USER="$DEMO_USER"' >> tj.pkrvars.hcl
+          echo 'SOURCE_AMI="$ami-SOURCE_AMI"' >> tj.pkrvars.hcl
+          echo 'INSTANCE_TYPE="$INSTANCE_TYPE"' >> tj.pkrvars.hcl
+          echo 'SSH_USERNAME="$SH_USERNAME"' >> tj.pkrvars.hcl
+
+
+      - name: Run `packer init`
+        id: init
+        run: "packer init ."
+
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate -var-file=tj.pkrvars.hcl ."
