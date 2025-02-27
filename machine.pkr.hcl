@@ -43,8 +43,8 @@ source "googlecompute" "gcp_ami" {
   source_image      = "${var.source_image}"
   ssh_username      = "${var.SSH_USERNAME}"
   zone              = "${var.zone}"
-  disk_size         = "${var.disk_size}"
-  machine_type      = "${var.machine_type}"
+  disk_size         = "var.disk_size"
+  machine_type      = var.machine_type
 }
 
 # Build configuration
