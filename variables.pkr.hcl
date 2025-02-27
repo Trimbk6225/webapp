@@ -86,7 +86,6 @@ variable "zone" {
 
 variable "DISK_SIZE" {
   type    = string
-  default = "10"
 }
 
 variable "machine_type" {
