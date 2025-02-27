@@ -24,6 +24,17 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{secrets.PROJECT_ID}}
+
       
       - name: Install Packer
         run: |
@@ -76,6 +87,11 @@ jobs:
           SOURCE_AMI: ${{secrets.SOURCE_AMI}}
           INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
           SSH_USERNAME: ${{secrets.SSH_USERNAME}}
+          disk_size: ${{secrets.DISK_SIZE}}
+          machine_type: ${{secrets.MACHINE_TYPE}}
+          zone: ${{secrets.ZONE}}
+          source_image: ${{secrets.SOURCE_IMAGE}}
+          project_id: ${{secrets.PROJECT_ID}}
         run: |
           echo -e 'DATABASE_USERNAME="$DATABASE_USERNAME"\n' >> tj.pkrvars.hcl
           echo -e 'DATABASE_PASSWORD="$DATABASE_PASSWORD"\n' >> tj.pkrvars.hcl
@@ -90,7 +106,14 @@ jobs:
           echo -e 'DEMO_USER="$DEMO_USER"\n' >> tj.pkrvars.hcl
           echo -e 'SOURCE_AMI="$ami-SOURCE_AMI"\n' >> tj.pkrvars.hcl
           echo -e 'INSTANCE_TYPE="$INSTANCE_TYPE"\n' >> tj.pkrvars.hcl
-          echo -e 'SSH_USERNAME="$SH_USERNAME"\n' >> tj.pkrvars.hcl
+          echo -e 'SSH_USERNAME="$SSH_USERNAME"\n' >> tj.pkrvars.hcl
+          echo -e 'disk_size="$disk_size"\n' >> tj.pkrvars.hcl
+          echo -e 'machine_type="$machine_type"\n' >> tj.pkrvars.hcl
+          echo -e 'zone="$zone"\n' >> tj.pkrvars.hcl
+          echo -e 'source_image="$source_image"\n' >> tj.pkrvars.hcl
+          echo -e 'project_id="$project_id"\n' >> tj.pkrvars.hcl
+          
+
 
 
       - name: Run `packer init`
@@ -99,4 +122,4 @@ jobs:
 
       - name: Run `packer validate`
         id: validate
-        run: "packer validate -var-file=tj.pkrvars.hcl ."
+        run: "packer validate ."

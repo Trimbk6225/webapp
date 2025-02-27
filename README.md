@@ -38,7 +38,13 @@ for Assignment 2
 
   For assignmrnt 3 :- 
   I created the workflow
+ Assignment 4
+ for aws first expor aws:-
+ export AWS_PROFILE=dev
 
+ for gcp:-
+
+ 
 
 
 

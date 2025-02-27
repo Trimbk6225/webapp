@@ -68,3 +68,28 @@ variable "INSTANCE_TYPE" {
   type    = string
   default = "t2.micro"
 }
+
+variable "project_id" {
+  type    = string
+  default = "devg"
+}
+
+variable "source_image" {
+  type    = string
+  default = "ubuntu"
+}
+
+variable "zone" {
+  type    = string
+  default = "us-east4-b"
+}
+
+variable "disk_size" {
+  type    =  string
+  default = "10"
+}
+
+variable "machine_type" {
+  type    = string
+  default = "e2"
+}

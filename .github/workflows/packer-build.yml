@@ -86,10 +86,26 @@ jobs:
         MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
         MYSQL_ROOT_USER: ${{secrets.MYSQL_ROOT_USER}}
         MYSQL_ROOT_PASS: ${{secrets.MYSQL_ROOT_PASSWORD}}
+        DISK_SIZE: ${{secrets.DISK_SIZE}}
+        machine_type: ${{secrets.MACHINE_TYPE}}
+        zone: ${{secrets.ZONE}}
+        source_image: ${{secrets.SOURCE_IMAGE}}
+        project_id: ${{secrets.PROJECT_ID}}
         
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{secrets.PROJECT_ID}}
+
       
       - name: Install Packer
         run: |
@@ -115,6 +131,11 @@ jobs:
           SOURCE_AMI: ${{secrets.SOURCE_AMI}}
           INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
           SSH_USERNAME: ${{secrets.SSH_USERNAME}}
+          DISK_SIZE: ${{secrets.DISK_SIZE}}
+          machine_type: ${{secrets.MACHINE_TYPE}}
+          zone: ${{secrets.ZONE}}
+          source_image: ${{secrets.SOURCE_IMAGE}}
+          project_id: ${{secrets.PROJECT_ID}}
         run: |
           cat <<EOF > tj.pkrvars.hcl
           DATABASE_USERNAME = "$DATABASE_USERNAME"
@@ -131,6 +152,11 @@ jobs:
           SOURCE_AMI = "$SOURCE_AMI"
           INSTANCE_TYPE = "$INSTANCE_TYPE"
           SSH_USERNAME = "$SSH_USERNAME"
+          DISK_SIZE = "$DISK_SIZE"
+          machine_type = "$machine_image"
+          zone = "$zone"
+          source_image = "$source_image"
+          project_id = "$project_id"
           EOF
 
 
