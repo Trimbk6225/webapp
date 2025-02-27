@@ -126,7 +126,7 @@ jobs:
           SOURCE_AMI: ${{secrets.SOURCE_AMI}}
           INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
           SSH_USERNAME: ${{secrets.SSH_USERNAME}}
-          disk_size: ${{secrets.DISK_SIZE}}
+          DISK_SIZE: ${{secrets.DISK_SIZE}}
           machine_type: ${{secrets.MACHINE_TYPE}}
           zone: ${{secrets.ZONE}}
           source_image: ${{secrets.SOURCE_IMAGE}}
@@ -147,7 +147,7 @@ jobs:
           SOURCE_AMI = "$SOURCE_AMI"
           INSTANCE_TYPE = "$INSTANCE_TYPE"
           SSH_USERNAME = "$SSH_USERNAME"
-          disk_size = "$disk_size"
+          DISK_SIZE = "$DISK_SIZE"
           machine_type = "$machine_image"
           zone = "$zone"
           source_image = "$source_image"
