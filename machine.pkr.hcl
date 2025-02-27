@@ -104,8 +104,8 @@ build {
       "sudo apt install -y python3-venv",
       "sudo apt install -y pkg-config",
       "sudo apt install -y mysql-server",
-      "sudo apt remove --purge git",
-      "sudo apt autoremove",
+      "sudo apt remove --purge git -y",
+      "sudo apt autoremove -y",
       "sudo systemctl enable mysql",
       "sudo systemctl start mysql",
 
