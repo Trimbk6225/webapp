@@ -147,7 +147,7 @@ jobs:
           SOURCE_AMI = "$SOURCE_AMI"
           INSTANCE_TYPE = "$INSTANCE_TYPE"
           SSH_USERNAME = "$SSH_USERNAME"
-          disk_size = "$DISK_SIZE"
+          disk_size = $DISK_SIZE
           machine_type = "$MACHINE_TYPE"
           zone = "$ZONE"
           source_image = "$SOURCE_IMAGE"

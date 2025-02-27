@@ -85,7 +85,7 @@ variable "zone" {
 }
 
 variable "disk_size" {
-  type    = string
+  type    = number
   default = "any"
 }
 
