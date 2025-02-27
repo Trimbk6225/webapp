@@ -86,7 +86,7 @@ variable "zone" {
 
 variable "disk_size" {
   type    = number
-  default = "any"
+  default = 10
 }
 
 variable "machine_type" {
