@@ -147,11 +147,11 @@ jobs:
           SOURCE_AMI = "$SOURCE_AMI"
           INSTANCE_TYPE = "$INSTANCE_TYPE"
           SSH_USERNAME = "$SSH_USERNAME"
-          disk_size = $DISK_SIZE
-          machine_type = "$MACHINE_TYPE"
-          zone = "$ZONE"
-          source_image = "$SOURCE_IMAGE"
-          project_id = "$PROJECT_ID"
+          disk_size = $disk_size
+          machine_type = "$machine_image"
+          zone = "$zone"
+          source_image = "$source_image"
+          project_id = "$project_id"
           EOF
 
 

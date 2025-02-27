@@ -87,7 +87,7 @@ jobs:
           SOURCE_AMI: ${{secrets.SOURCE_AMI}}
           INSTANCE_TYPE: ${{secrets.INSTANCE_TYPE}}
           SSH_USERNAME: ${{secrets.SSH_USERNAME}}
-          disk_size: ${{secrets.DARK_SIZE}}
+          disk_size: ${{secrets.DISK_SIZE}}
           machine_type: ${{secrets.MACHINE_TYPE}}
           zone: ${{secrets.ZONE}}
           source_image: ${{secrets.SOURCE_IMAGE}}
@@ -107,11 +107,11 @@ jobs:
           echo -e 'SOURCE_AMI="$ami-SOURCE_AMI"\n' >> tj.pkrvars.hcl
           echo -e 'INSTANCE_TYPE="$INSTANCE_TYPE"\n' >> tj.pkrvars.hcl
           echo -e 'SSH_USERNAME="$SSH_USERNAME"\n' >> tj.pkrvars.hcl
-          echo -e 'disk_size=$DISK_SIZE\n' >> tj.pkrvars.hcl
-          echo -e 'machine_type="$MACHINE_TYPE"\n' >> tj.pkrvars.hcl
-          echo -e 'zone="$ZONE"\n' >> tj.pkrvars.hcl
-          echo -e 'source_image="$SOURCE_IMAGE"\n' >> tj.pkrvars.hcl
-          echo -e 'project_id="$PROJECT_ID"\n' >> tj.pkrvars.hcl
+          echo -e 'disk_size=$disk_size\n' >> tj.pkrvars.hcl
+          echo -e 'machine_type="$machine_type"\n' >> tj.pkrvars.hcl
+          echo -e 'zone="$zone"\n' >> tj.pkrvars.hcl
+          echo -e 'source_image="$source_image"\n' >> tj.pkrvars.hcl
+          echo -e 'project_id="$project_id"\n' >> tj.pkrvars.hcl
           
 
 
