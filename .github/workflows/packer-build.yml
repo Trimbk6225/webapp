@@ -86,6 +86,11 @@ jobs:
         MYSQL_DEFAULT_PASSWORD: ${{ secrets.MYSQL_DEFAULT_PASSWORD }}
         MYSQL_ROOT_USER: ${{secrets.MYSQL_ROOT_USER}}
         MYSQL_ROOT_PASS: ${{secrets.MYSQL_ROOT_PASSWORD}}
+        DISK_SIZE: ${{secrets.DISK_SIZE}}
+        machine_type: ${{secrets.MACHINE_TYPE}}
+        zone: ${{secrets.ZONE}}
+        source_image: ${{secrets.SOURCE_IMAGE}}
+        project_id: ${{secrets.PROJECT_ID}}
         
     steps:
       - name: Checkout Code
