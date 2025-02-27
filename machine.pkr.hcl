@@ -6,6 +6,16 @@ packer {
     }
   }
 }
+packer {
+  required_plugins {
+    googlecompute = {
+      source  = "github.com/hashicorp/googlecompute"
+      version = "~> 1"
+    }
+  }
+}
+
+
 
 source "amazon-ebs" "my_ami" {
   ami_name        = "csye6225_f25_app_${formatdate("YYYY_MM_DD", timestamp())}"
@@ -25,12 +35,25 @@ source "amazon-ebs" "my_ami" {
   }
 }
 
+#gcp
+source "googlecompute" "gcp_ami" {
+  image_name        = "gcp6225f25app${formatdate("YYYYMMDD", timestamp())}"
+  image_description = "image on gcp"
+  project_id        = "${var.project_id}"
+  source_image      = "${var.source_image}"
+  ssh_username      = "${var.SSH_USERNAME}"
+  zone              = "${var.zone}"
+  disk_size         = var.disk_size
+  machine_type      = var.machine_type
+}
+
 # Build configuration
 
 build {
-  name    = "A4"
+  name = "A4"
   sources = [
-    "source.amazon-ebs.my_ami", 
+    "source.amazon-ebs.my_ami",
+    "source.googlecompute.gcp_ami",
   ]
 
 
@@ -41,7 +64,7 @@ build {
     destination = "/tmp/"
   }
 
-   provisioner "file" {
+  provisioner "file" {
     source      = "csye6225.service"
     destination = "/tmp/"
   }
@@ -65,7 +88,7 @@ build {
       "MYSQL_ROOT_PASS=${var.MYSQL_ROOT_PASS}",
     ]
 
-    
+
     inline = [
       # "export MYSQL_ROOT_USER=${var.MYSQL_ROOT_USER}",
       # "export MYSQL_ROOT_PASS=${var.MYSQL_ROOT_PASS}",
@@ -81,12 +104,14 @@ build {
       "sudo apt install -y python3-venv",
       "sudo apt install -y pkg-config",
       "sudo apt install -y mysql-server",
+      "sudo apt remove --purge git",
+      "sudo apt autoremove",
       "sudo systemctl enable mysql",
       "sudo systemctl start mysql",
 
 
       # Proceed with MySQL commands after setting the root password
-     "sudo mysql -u root -proot -e \"CREATE USER '$DATABASE_USERNAME'@'$DATABASE_HOST' IDENTIFIED BY '$DATABASE_PASSWORD'; CREATE DATABASE $DATABASE_NAME; GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST' WITH GRANT OPTION; FLUSH PRIVILEGES;\""
+      "sudo mysql -u root -proot -e \"CREATE USER '$DATABASE_USERNAME'@'$DATABASE_HOST' IDENTIFIED BY '$DATABASE_PASSWORD'; CREATE DATABASE $DATABASE_NAME; GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST' WITH GRANT OPTION; FLUSH PRIVILEGES;\""
     ]
   }
 
