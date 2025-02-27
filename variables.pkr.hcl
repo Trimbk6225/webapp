@@ -84,7 +84,7 @@ variable "zone" {
   default = "us-east4-b"
 }
 
-variable "DISK_SIZE" {
+variable "disk_size" {
   type    = string
   default = "10"
 }
