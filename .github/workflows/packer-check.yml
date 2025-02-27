@@ -107,7 +107,7 @@ jobs:
           echo -e 'SOURCE_AMI="$ami-SOURCE_AMI"\n' >> tj.pkrvars.hcl
           echo -e 'INSTANCE_TYPE="$INSTANCE_TYPE"\n' >> tj.pkrvars.hcl
           echo -e 'SSH_USERNAME="$SSH_USERNAME"\n' >> tj.pkrvars.hcl
-          echo -e 'disk_size=$disk_size\n' >> tj.pkrvars.hcl
+          echo -e 'disk_size="$disk_size"\n' >> tj.pkrvars.hcl
           echo -e 'machine_type="$machine_type"\n' >> tj.pkrvars.hcl
           echo -e 'zone="$zone"\n' >> tj.pkrvars.hcl
           echo -e 'source_image="$source_image"\n' >> tj.pkrvars.hcl
