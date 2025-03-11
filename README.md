@@ -9,7 +9,7 @@ Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.1.0
 PyMySQL
 python-dotenv==1.0.1
-cryptography
+cryptography  
 }
 For database conectivity I use MySql 
 before running the app i have to run some commands so the the database will connect properly
