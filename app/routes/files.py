@@ -28,7 +28,7 @@ def upload_file():
         id=file_id,
         file_name=file_name,
         url=file_url,
-        upload_time=datetime.utcnow()
+        upload_time=datetime.utcnow().date()
     )
     db.session.add(metadata)
     db.session.commit()
