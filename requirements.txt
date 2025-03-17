@@ -5,3 +5,4 @@ PyMySQL
 python-dotenv==1.0.1
 cryptography
 pytest
+boto3
