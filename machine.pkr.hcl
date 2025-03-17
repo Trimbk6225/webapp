@@ -59,10 +59,10 @@ build {
 
 
 
-  provisioner "file" {
-    source      = "./.env"
-    destination = "/tmp/"
-  }
+  # provisioner "file" {
+  #   source      = "./.env"
+  #   destination = "/tmp/"
+  # }
 
   provisioner "file" {
     source      = "csye6225.service"
@@ -80,12 +80,12 @@ build {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1",
-      "DATABASE_USERNAME=${var.DATABASE_USERNAME}",
-      "DATABASE_PASSWORD=${var.DATABASE_PASSWORD}",
-      "DATABASE_HOST=${var.DATABASE_HOST}",
-      "DATABASE_NAME=${var.DATABASE_NAME}",
-      "MYSQL_ROOT_USER=${var.MYSQL_ROOT_USER}",
-      "MYSQL_ROOT_PASS=${var.MYSQL_ROOT_PASS}",
+      # "DATABASE_USERNAME=${var.DATABASE_USERNAME}",
+      # "DATABASE_PASSWORD=${var.DATABASE_PASSWORD}",
+      # "DATABASE_HOST=${var.DATABASE_HOST}",
+      # "DATABASE_NAME=${var.DATABASE_NAME}",
+      # "MYSQL_ROOT_USER=${var.MYSQL_ROOT_USER}",
+      # "MYSQL_ROOT_PASS=${var.MYSQL_ROOT_PASS}",
     ]
 
 
@@ -103,15 +103,15 @@ build {
       "sudo apt install -y python3-pip",
       "sudo apt install -y python3-venv",
       "sudo apt install -y pkg-config",
-      "sudo apt install -y mysql-server",
+      # "sudo apt install -y mysql-server",
       "sudo apt remove --purge git -y",
       "sudo apt autoremove -y",
-      "sudo systemctl enable mysql",
-      "sudo systemctl start mysql",
+      # "sudo systemctl enable mysql",
+      # "sudo systemctl start mysql",
 
 
       # Proceed with MySQL commands after setting the root password
-      "sudo mysql -u root -proot -e \"CREATE USER '$DATABASE_USERNAME'@'$DATABASE_HOST' IDENTIFIED BY '$DATABASE_PASSWORD'; CREATE DATABASE $DATABASE_NAME; GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST' WITH GRANT OPTION; FLUSH PRIVILEGES;\""
+      # "sudo mysql -u root -proot -e \"CREATE USER '$DATABASE_USERNAME'@'$DATABASE_HOST' IDENTIFIED BY '$DATABASE_PASSWORD'; CREATE DATABASE $DATABASE_NAME; GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DATABASE_USERNAME'@'$DATABASE_HOST' WITH GRANT OPTION; FLUSH PRIVILEGES;\""
     ]
   }
 

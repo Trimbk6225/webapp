@@ -1,6 +1,6 @@
 [Unit]
 Description=CSYE 6225 Flask Application
-ConditionPathExists=/opt/csye6225/webapp
+ConditionPathExists=/opt/csye6225/webapp/.env
 After=network.target
 
 [Service]
