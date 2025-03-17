@@ -42,7 +42,7 @@ for Assignment 2
  for aws first expor aws:-
  export AWS_PROFILE=dev
 
- for gcp:-
+ assugnment5
 
  
 
