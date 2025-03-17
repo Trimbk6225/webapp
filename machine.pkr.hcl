@@ -59,10 +59,10 @@ build {
 
 
 
-  provisioner "file" {
-    source      = "./.env"
-    destination = "/tmp/"
-  }
+  # provisioner "file" {
+  #   source      = "./.env"
+  #   destination = "/tmp/"
+  # }
 
   provisioner "file" {
     source      = "csye6225.service"
