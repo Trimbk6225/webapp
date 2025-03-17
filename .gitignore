@@ -191,6 +191,6 @@ crash.log
 # subject to change depending on the environment.
 #
 *.pkrvars.hcl
-
+webapp.zip
 # For built boxes
 *.box
