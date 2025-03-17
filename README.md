@@ -42,10 +42,16 @@ for Assignment 2
  for aws first expor aws:-
  export AWS_PROFILE=dev
 
- assugnment5
+Project Structure and Updates for Assignment 5
 
- hdcjhdv
- 
+You have created the following files:
+	•	file_metadata.py in app/models/
+	•	files.py in app/routes/
+	•	s3.py in app/utils/
+	•	test_files.py in webapp_tj/tests/
+	•	You have also updated the Packer file.
+
+
 
 
 
