@@ -4,6 +4,7 @@ from app.routes.health_check import health_check_blueprint
 from flask_migrate import Migrate
 from app.config import Config, TestConfig
 from sqlalchemy import create_engine, text
+from app.routes.files import files_blueprint
 
 migrate = Migrate()
 
@@ -30,6 +31,7 @@ def create_app(config_name=None):
 
     # Register blueprints
     app.register_blueprint(health_check_blueprint)
+    app.register_blueprint(files_blueprint)
 
     with app.app_context():
         db.create_all()
