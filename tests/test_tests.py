@@ -139,5 +139,5 @@ class HealthCheckTestCase(unittest.TestCase):
         # Ensure insert_health_check was actually called
         mock_insert_health_check.assert_called_once()
 
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()
