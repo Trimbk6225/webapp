@@ -2,8 +2,6 @@ import boto3
 import os
 from datetime import datetime
 
-s3_client = boto3.client('s3', region_name=os.getenv('AWS_REGION'))
-
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 def upload_file_to_s3(file, file_name):
