@@ -22,9 +22,10 @@ def delete_file_from_s3(file_name):
 
 def get_file_url(file_name):
     try:
-        # Simply return None or raise an exception if you don't want to provide access
-        print("Access is not permitted to the file.")
-        return None  # No URL is generated
+        # Construct the public URL for the S3 object
+        url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_name}"
+        
+        return url
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error generating URL: {e}")
         return None
