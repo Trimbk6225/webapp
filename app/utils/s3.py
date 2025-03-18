@@ -22,12 +22,9 @@ def delete_file_from_s3(file_name):
 
 def get_file_url(file_name):
     try:
-        url = s3_client.generate_presigned_url(
-            'get_object',
-            Params={'Bucket': BUCKET_NAME, 'Key': file_name},
-            ExpiresIn=3600  # URL valid for 1 hour
-        )
-        return url
+        # Simply return None or raise an exception if you don't want to provide access
+        print("Access is not permitted to the file.")
+        return None  # No URL is generated
     except Exception as e:
-        print(f"Error generating URL: {e}")
+        print(f"Error: {e}")
         return None
