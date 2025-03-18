@@ -6,7 +6,7 @@ BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 def upload_file_to_s3(file, file_name):
     try:
-        s3_client.upload_fileobj(file, BUCKET_NAME, file_name, ExtraArgs={'ACL': 'private'})
+        s3_client.upload_fileobj(file, BUCKET_NAME, file_name)
         return True
     except Exception as e:
         print(f"Error uploading file: {e}")
