@@ -29,7 +29,7 @@ def delete_file_from_s3(file_name):
 def get_file_url(file_name):
     try:
         # Construct the public URL for the S3 object
-        url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_name}"
+        url = f"{BUCKET_NAME}/{file_name}"
         
         return url
     except Exception as e:
