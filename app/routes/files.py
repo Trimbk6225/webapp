@@ -7,6 +7,7 @@ import uuid
 
 files_blueprint = Blueprint("files", __name__)
 
+# Modify the `upload_file` route in Files.py to include metadata
 @files_blueprint.route("/v1/file", methods=["POST"])
 def upload_file():
     if "profilePic" not in request.files:
@@ -14,30 +15,42 @@ def upload_file():
     
     file = request.files["profilePic"]
     file_name = file.filename
-    file_id = str(uuid.uuid4())  # Generate unique ID
-    file_path = f"{file_id}/{file_name}"  # Store in bucket with unique identifier
+    file_id = str(uuid.uuid4())  # Generate unique ID for the file
+    file_path = f"{file_id}/{file_name}"  # Use unique ID for the file path in S3
     
-    # Upload to S3
-    if not upload_file_to_s3(file, file_path):
+    # Create custom metadata (file type, file size, etc.)
+    extra_metadata = {
+        'fileType': file.content_type,  # Mime type of the file
+        'fileSize': str(len(file.read()))  # File size in bytes
+    }
+
+    # Reset file pointer after reading it (necessary for uploading)
+    file.seek(0)
+
+    # Upload file to S3 with custom metadata
+    if not upload_file_to_s3(file, file_path, extra_metadata):
         return jsonify({"error": "Failed to upload file"}), 500
     
+    # Get the URL of the uploaded file
     file_url = get_file_url(file_path)
-    
-    # Save metadata to database
-    metadata = FileMetadata(
+
+    # Save file metadata to the database
+    metadata_db = FileMetadata(
         id=file_id,
         file_name=file_name,
         url=file_url,
-        upload_time=datetime.utcnow().date()
+        upload_time=datetime.utcnow().date(),
+        extra_metadata=extra_metadata  # Store extra metadata here
     )
-    db.session.add(metadata)
+    db.session.add(metadata_db)
     db.session.commit()
     
+    # Return the response with metadata excluded
     return jsonify({
         "file_name": file_name,
         "id": file_id,
         "url": file_url,
-        "upload_date": metadata.upload_time.strftime("%Y-%m-%d")
+        "upload_date": metadata_db.upload_time.strftime("%Y-%m-%d")
     }), 201
 
 @files_blueprint.route("/v1/file/<id>", methods=["GET"])
