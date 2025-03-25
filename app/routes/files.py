@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,  make_response
 from app.utils.s3 import upload_file_to_s3, delete_file_from_s3, get_file_url
 from app.models.file_metadata import FileMetadata
 from app.utils.db import db
@@ -55,6 +55,9 @@ def upload_file():
 
 @files_blueprint.route("/v1/file/<id>", methods=["GET"])
 def get_file(id):
+    if not id:  # Check if ID is empty or missing
+        return jsonify({"error": "Bad Request"}), 400
+
     metadata = FileMetadata.query.filter_by(id=id).first()
     if not metadata:
         return jsonify({"error": "File not found"}), 404
@@ -68,6 +71,9 @@ def get_file(id):
 
 @files_blueprint.route("/v1/file/<id>", methods=["DELETE"])
 def delete_file(id):
+    if not id:  # Check if ID is empty or missing
+        return jsonify({"error": "Bad Request"}), 400
+
     metadata = FileMetadata.query.filter_by(id=id).first()
     if not metadata:
         return jsonify({"error": "File not found"}), 404
@@ -81,3 +87,25 @@ def delete_file(id):
     db.session.commit()
 
     return "", 204
+
+# Add explicit handling for OPTIONS and HEAD methods for /v1/file route
+@files_blueprint.route("/v1/file", methods=["OPTIONS", "HEAD"])
+def handle_options_head_for_file():
+    response = make_response("", 405)
+    response.headers["Allow"] = "POST"
+    return response
+
+# Add explicit handling for OPTIONS and HEAD methods for /v1/file/<id> route
+@files_blueprint.route("/v1/file/<id>", methods=["OPTIONS", "HEAD"])
+def handle_options_head_for_file_id(id):
+    response = make_response("", 405)
+    response.headers["Allow"] = "GET, DELETE"
+    return response
+
+# Override Flask's default automatic OPTIONS behavior globally for this blueprint
+@files_blueprint.before_request
+def intercept_options_and_head_requests():
+    if request.method in ["OPTIONS", "HEAD"]:
+        endpoint = request.endpoint or ""
+        if endpoint.startswith("files."):
+            return make_response("", 405)
