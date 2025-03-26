@@ -13,11 +13,17 @@ def setup_logger():
     stream_handler.setFormatter(stream_formatter)
     
     # FileHandler: Logs to /var/log/webapp/webapp.log
-    if os.getenv("LOG"):
-        file_handler = logging.FileHandler('webapp.log')
-    else:
-        file_handler = logging.FileHandler('/var/log/webapp/webapp.log')  # Log file location
+    # if os.getenv("LOG"):
+    #     file_handler = logging.FileHandler('webapp.log')
+    # else:
+    #     file_handler = logging.FileHandler('/var/log/webapp/webapp.log')  # Log file location
+    print("jellllll", os.getenv("LOG", '/var/log/webapp/webapp.log'))
+    log_file = os.getenv("LOG")
+    if not log_file:
+        log_file = "/var/log/webapp/webapp.log"
 
+    # log_file = os.getenv("LOG") if os.getenv("LOG") else "/var/log/webapp/webapp.log"
+    file_handler = logging.FileHandler(log_file)
     # file_handler = logging.FileHandler('webapp.log')  # Log file location
     file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(file_formatter)
