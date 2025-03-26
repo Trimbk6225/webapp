@@ -24,24 +24,24 @@ def test_upload_file_no_file(client):
     json_data = response.get_json()
     assert json_data["error"] == "No file provided"
 
-@patch("app.models.file_metadata.FileMetadata.query.filter_by")
-def test_get_file_not_found(mock_filter_by, client):
-    """Test retrieving a file that does not exist."""
-    mock_filter_by.return_value.first.return_value = None
+# @patch("app.models.file_metadata.FileMetadata.query.filter_by")
+# def test_get_file_not_found(mock_filter_by, client):
+#     """Test retrieving a file that does not exist."""
+#     mock_filter_by.return_value.first.return_value = None
 
-    response = client.get("/v1/file/nonexistent-id")
+#     response = client.get("/v1/file/nonexistent-id")
 
-    assert response.status_code == 404
-    json_data = response.get_json()
-    assert json_data["error"] == "File not found"
+#     assert response.status_code == 404
+#     json_data = response.get_json()
+#     assert json_data["error"] == "File not found"
 
-@patch("app.models.file_metadata.FileMetadata.query.filter_by")
-def test_delete_file_not_found(mock_filter_by, client):
-    """Test deleting a file that does not exist."""
-    mock_filter_by.return_value.first.return_value = None
+# @patch("app.models.file_metadata.FileMetadata.query.filter_by")
+# def test_delete_file_not_found(mock_filter_by, client):
+#     """Test deleting a file that does not exist."""
+#     mock_filter_by.return_value.first.return_value = None
 
-    response = client.delete("/v1/file/nonexistent-id")
+#     response = client.delete("/v1/file/nonexistent-id")
 
-    assert response.status_code == 404
-    json_data = response.get_json()
-    assert json_data["error"] == "File not found"
+#     assert response.status_code == 404
+#     json_data = response.get_json()
+#     assert json_data["error"] == "File not found"

@@ -194,3 +194,5 @@ crash.log
 webapp.zip
 # For built boxes
 *.box
+
+.vscode

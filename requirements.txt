@@ -6,3 +6,5 @@ python-dotenv==1.0.1
 cryptography
 pytest
 boto3
+logging
+statsd==3.3.0

@@ -60,12 +60,14 @@ jobs:
           DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
           DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          LOG: ${{secrets.LOG}}
         run: |
           echo "DATABASE_USERNAME=$DATABASE_USERNAME" > .env
           echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
           echo "DATABASE_HOST=$DATABASE_HOST" >> .env
           echo "DATABASE_NAME=test_$DATABASE_NAME" >> .env
           echo "DATABASE_PORT=$DATABASE_PORT" >> .env
+          echo "LOG=$LOG" >> .env
 
       - name: Execute Tests with Pytest
         run: |

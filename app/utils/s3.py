@@ -1,10 +1,14 @@
+import time
 import boto3
 import os
 from datetime import datetime
+from app.utils.statsd_client import record_timer
+
 s3_client = boto3.client('s3')
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 def upload_file_to_s3(file, file_name, metadata=None):
+    start_time = time.time()
     try:
         # If additional metadata is provided, include it in the upload
         extra_args = {}
@@ -17,6 +21,10 @@ def upload_file_to_s3(file, file_name, metadata=None):
     except Exception as e:
         print(f"Error uploading file: {e}")
         return False
+    
+    finally:
+        duration = time.time() - start_time
+        record_timer("s3.upload.duration", duration)  # Measure S3 upload operation time
 
 def delete_file_from_s3(file_name):
     try:

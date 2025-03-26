@@ -6,7 +6,8 @@ set -e
 sudo groupadd -f csye6225
 sudo useradd -r -g csye6225 -s /usr/sbin/nologin csye6225
 
-
+sudo chown -R csye6225:csye6225 /var/log/webapp                  # Create log directory
+sudo chmod -R 755 /var/log/webapp
 sudo mkdir -p /opt/csye6225/webapp
 sudo chown -R csye6225:csye6225 /opt/csye6225
 
