@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from app.config import Config, TestConfig
 from sqlalchemy import create_engine, text
 from app.routes.files import files_blueprint
+from app.utils.logger import webapp_logger
 
 migrate = Migrate()
 
@@ -36,4 +37,5 @@ def create_app(config_name=None):
     with app.app_context():
         db.create_all()
 
+    webapp_logger.info("Application started")
     return app
