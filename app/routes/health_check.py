@@ -10,7 +10,7 @@ def health_check():
     # Disallow payload
     if request.method != "GET":
         return make_response("", 405)
-    if request.data:
+    if request.data or request.files:
         return make_response("", 400)  # Bad Request
 
     # Insert record

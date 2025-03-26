@@ -118,3 +118,28 @@ def delete_file(id):
 @log_request
 def other():
     return "", 405
+
+# Add explicit handling for OPTIONS and HEAD methods for /v1/file route
+@files_blueprint.route("/v1/file", methods=["OPTIONS", "HEAD"])
+@log_request
+def handle_options_head_for_file():
+    response = make_response("", 405)
+    response.headers["Allow"] = "POST"
+    return response
+
+# Add explicit handling for OPTIONS and HEAD methods for /v1/file/<id> route
+@files_blueprint.route("/v1/file/<id>", methods=["OPTIONS", "HEAD"])
+@log_request
+def handle_options_head_for_file_id(id):
+    response = make_response("", 405)
+    response.headers["Allow"] = "GET, DELETE"
+    return response
+
+# Override Flask's default automatic OPTIONS behavior globally for this blueprint
+@files_blueprint.before_request
+@log_request
+def intercept_options_and_head_requests():
+    if request.method in ["OPTIONS", "HEAD"]:
+        endpoint = request.endpoint or ""
+        if endpoint.startswith("files."):
+            return make_response("", 405)
