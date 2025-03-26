@@ -60,6 +60,7 @@ def log_request(func):
             status_code = response[1]
         else:
             status_code = response.status_code
+            
         if 400 <= status_code < 600:
             webapp_logger.error(f"Response: {status_code} - {request.method} {request.url}")
         else:
