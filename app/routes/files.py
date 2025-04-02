@@ -16,23 +16,23 @@ files_blueprint = Blueprint("files", __name__)
 @log_request
 def upload_file():
     start_time = time.time()
-    increment_counter("api.upload_file.calls")  # Count API calls
+    increment_counter("api.upload_file.calls")  
 
     if "profilePic" not in request.files:
         return jsonify({"error": "No file provided"}), 400
     
     file = request.files["profilePic"]
     file_name = file.filename
-    file_id = str(uuid.uuid4())  # Generate unique ID for the file
-    file_path = f"{file_id}/{file_name}"  # Use unique ID for the file path in S3
+    file_id = str(uuid.uuid4())  
+    file_path = f"{file_id}/{file_name}"  
     
     # Create custom metadata (file type, file size, etc.)
     extra_metadata = {
-        'fileType': file.content_type,  # Mime type of the file
-        'fileSize': str(len(file.read()))  # File size in bytes
+        'fileType': file.content_type,  
+        'fileSize': str(len(file.read()))  
     }
 
-    # Reset file pointer after reading it (necessary for uploading)
+   
     file.seek(0)
 
     # Upload file to S3 with custom metadata
@@ -41,7 +41,7 @@ def upload_file():
     
     webapp_logger.info(f"File uploaded: {file_name}")
     
-    # Get the URL of the uploaded file
+
     file_url = get_file_url(file_path)
 
     # Save file metadata to the database
@@ -50,13 +50,13 @@ def upload_file():
         file_name=file_name,
         url=file_url,
         upload_time=datetime.utcnow().date(),
-        extra_metadata=extra_metadata  # Store extra metadata here
+        extra_metadata=extra_metadata  
     )
     db.session.add(metadata_db)
     db.session.commit()
     
     duration = time.time() - start_time
-    record_timer("api.upload_file.duration", duration)  # Measure API processing time
+    record_timer("api.upload_file.duration", duration) 
     try:
         insert_file_metadata(metadata_db)
     except Exception as e:
@@ -113,13 +113,6 @@ def delete_file(id):
 
     return "", 204
 
-
-# @files_blueprint.route("/v1/file/<id>", methods=["HEAD","OPTIONS","POST", "PUT", "PATCH"])
-# @log_request
-# def other():
-#     return "", 405
-
-# Add explicit handling for OPTIONS and HEAD methods for /v1/file route
 @files_blueprint.route("/v1/file", methods=["OPTIONS", "HEAD","PUT", "PATCH","GET","DELETE"])
 @log_request
 def handle_options_head_for_file():
