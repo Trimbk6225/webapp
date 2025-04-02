@@ -127,7 +127,7 @@ class HealthCheckTestCase(unittest.TestCase):
     def test_service_unavailable(self, mock_insert_health_check):
         """Test if the service returns a 503 status code when it's unavailable"""
         
-        # Ensure the mock is being applied correctly
+        
         print("Mock is patched and should return False")
         
         # Perform the health check request
@@ -136,7 +136,7 @@ class HealthCheckTestCase(unittest.TestCase):
         # Check the status code should be 503 as the insert_health_check returns False
         self.assertEqual(response.status_code, 503)
 
-        # Ensure insert_health_check was actually called
+       
         mock_insert_health_check.assert_called_once()
 
 if __name__ == "__main__":

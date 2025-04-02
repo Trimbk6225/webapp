@@ -1,13 +1,17 @@
 from flask import Blueprint, request, make_response
 from app.services.health_check_service import insert_health_check
 from app.utils.logger import log_request, webapp_logger
+from datetime import datetime
+import time
+from app.utils.statsd_client import increment_counter, record_timer
 
 health_check_blueprint = Blueprint("health_check", __name__)
 
 @health_check_blueprint.route("/healthz", methods=["GET"],provide_automatic_options=False)
 @log_request
 def health_check():
-    # Disallow payload
+    start_time = time.time()
+    increment_counter("api.get.calls")
     if request.method != "GET":
         return make_response("", 405)
     if request.data or request.files:
@@ -25,6 +29,11 @@ def health_check():
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate;"
     response.headers["Pragma"] = "no-cache"
     response.headers["X-Content-Type-Options"] = "nosniff"
+
+    duration = time.time() - start_time
+    record_timer("api.get_call.duration", duration) 
+
+    
 
     return response
 

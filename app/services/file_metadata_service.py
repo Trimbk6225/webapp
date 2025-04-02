@@ -16,4 +16,4 @@ def insert_file_metadata(metadata_db):
     
     finally:
         duration = time.time() - start_time
-        record_timer("db.insert_file_metadata.duration", duration)  # Measure DB query execution time
+        record_timer("db.insert_file_metadata.duration", duration)  

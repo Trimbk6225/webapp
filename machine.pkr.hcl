@@ -56,25 +56,25 @@ build {
     "source.googlecompute.gcp_ami",
   ]
   provisioner "file" {
-    source      = "./cloudwatch-config.json"    # Path to your local config file
-    destination = "/tmp/cloudwatch-config.json" # Temporary location on the instance
+    source      = "./cloudwatch-config.json"   
+    destination = "/tmp/cloudwatch-config.json"
   }
   # Create /var/log/webapp directory and configure CloudWatch Agent
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /var/log/webapp",
-      # "sudo chown -R csye6225:csye6225 /var/log/webapp",                   # Create log directory
-      # "sudo chmod -R 755 /var/log/webapp",                # Set permissions
+      # "sudo chown -R csye6225:csye6225 /var/log/webapp",                  
+      # "sudo chmod -R 755 /var/log/webapp",                
       "sudo apt-get update",
       "sudo apt-get install -y wget",
-      "wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb", # Download CloudWatch Agent
-      "sudo dpkg -i amazon-cloudwatch-agent.deb",                                                             # Install the Agent
-      # "rm amazon-cloudwatch-agent.deb",                   # Remove the .deb file after installation
+      "wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb", 
+      "sudo dpkg -i amazon-cloudwatch-agent.deb",                                                            
+      # "rm amazon-cloudwatch-agent.deb",                  
       # "sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc/", # Ensure config directory exists
       #  "[[ -f /tmp/cloudwatch-config.json ]] && sudo mv /tmp/cloudwatch-config.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json || echo 'Config file not found!'" ,# Move config file
       "sudo mv /tmp/cloudwatch-config.json /opt/",
-      "sudo systemctl enable amazon-cloudwatch-agent", # Enable CloudWatch Agent on startup
-      "sudo systemctl start amazon-cloudwatch-agent",  # Start CloudWatch Agent
+      "sudo systemctl enable amazon-cloudwatch-agent", 
+      "sudo systemctl start amazon-cloudwatch-agent",  
     ]
   }
 

@@ -1,8 +1,8 @@
 import statsd
 
-# Initialize StatsD client with host and port of CloudWatch Agent or StatsD exporter
-statsd_host = '127.0.0.1'  # Replace with your StatsD host if different
-statsd_port = 8125         # Default StatsD port
+
+statsd_host = '127.0.0.1'  
+statsd_port = 8125        
 
 # Create a StatsD client with a prefix for metrics
 statsd_client = statsd.StatsClient(host=statsd_host, port=statsd_port, prefix="webapp")
