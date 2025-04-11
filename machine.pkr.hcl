@@ -53,7 +53,7 @@ build {
   name = "A4"
   sources = [
     "source.amazon-ebs.my_ami",
-    "source.googlecompute.gcp_ami",
+    # "source.googlecompute.gcp_ami",
   ]
   provisioner "file" {
     source      = "./cloudwatch-config.json"   
