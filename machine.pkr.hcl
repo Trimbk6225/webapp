@@ -142,6 +142,10 @@ build {
   provisioner "shell" {
     script = "setup2.sh"
   }
+
+  post-processor "manifest" {
+    output = "manifest.json"
+  }
 }
 
 
