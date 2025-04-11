@@ -142,6 +142,8 @@ jobs:
           AWS_DEMO_SECRET_ACCESS_KEY: ${{secrets.AWS_DEMO_SECRET_ACCESS_KEY}}
 
         run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          echo "AMI_NAME=csye6225_f25_app_${TIMESTAMP}" >> $GITHUB_ENV
           cat <<EOF > tj.pkrvars.hcl
           DATABASE_USERNAME = "$DATABASE_USERNAME"
           DATABASE_PASSWORD = "$DATABASE_PASSWORD"
@@ -164,6 +166,7 @@ jobs:
           project_id = "$project_id"
           AWS_DEMO_ACCEESS_KEY_ID = "AWS_DEMO_ACCEESS_KEY_ID"
           AWS_DEMO_SECRET_ACCESS_KEY = "AWS_DEMO_SECRET_ACCESS_KEY"
+          AMI_NAME = "csye6225_f25_app_${TIMESTAMP}"
           EOF
 
 
@@ -209,7 +212,7 @@ jobs:
       - name: Build AMI with Packer and extract AMI ID
         id: ami_build
         run: |
-          output=$(packer build -var-file=tj.pkrvars.hcl . )
+         output=$(packer build -var-file=tj.pkrvars.hcl .)
           ami_id=$(echo "$output" | grep 'AMI:' | awk '{print $2}' | tail -n1)
           echo "AMI_ID=$ami_id" >> $GITHUB_ENV
           echo "::set-output name=ami_id::$ami_id"
