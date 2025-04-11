@@ -18,7 +18,7 @@ packer {
 
 
 source "amazon-ebs" "my_ami" {
-  ami_name        = "csye6225_f25_app_${formatdate("YYYY_MM_DD", timestamp())}"
+  ami_name        = "csye6225_f25_app_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   instance_type   = var.INSTANCE_TYPE
   region          = var.AWS_REGION
   ami_description = "AMI FOR CSYE 6225"
@@ -142,6 +142,12 @@ build {
   provisioner "shell" {
     script = "setup2.sh"
   }
+
+  post-processor "manifest" {
+    output = "manifest.json"
+  }
+
+
 }
 
 

@@ -220,14 +220,14 @@ jobs:
         id: ami_build
         run: |
           echo "📦 Starting Packer build..."
-          packer build -var-file=tj.pkrvars.hcl . | tee packer_output.log
+          packer build -var-file=tj.pkrvars.hcl .
       
-          echo "🔍 Extracting AMI ID from output..."
-          ami_id=$(grep 'AMI:' packer_output.log | awk '{print $2}' | tail -n1)
-      
+          echo "🔍 Extracting AMI ID from manifest.json..."
+          ami_id=$(jq -r '.builds[] | select(.builder_type=="amazon-ebs") | .artifact_id' manifest.json | cut -d':' -f2)
+          
           if [ -z "$ami_id" ]; then
-            echo "❌ Failed to extract AMI ID. Check packer logs:"
-            cat packer_output.log
+            echo "❌ Failed to extract AMI ID. Check manifest.json:"
+            cat manifest.json
             exit 1
           fi
       
