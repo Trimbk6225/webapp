@@ -25,6 +25,25 @@ def health_check():
 
         webapp_logger.info("Health check performed")
 
+@health_check_blueprint.route("/cicd", methods=["GET"],provide_automatic_options=False)
+@log_request
+def health_check():
+    start_time = time.time()
+    increment_counter("api.get.calls")
+    if request.method != "GET":
+        return make_response("", 405)
+    if request.data or request.files:
+        return make_response("", 400)  # Bad Request
+
+    # Insert record
+    if insert_health_check():
+        response = make_response("", 200)
+    else:
+        response = make_response("", 503)  # Service Unavailable
+
+        webapp_logger.info("Health check performed")
+
+
     # Add headers
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate;"
     response.headers["Pragma"] = "no-cache"
