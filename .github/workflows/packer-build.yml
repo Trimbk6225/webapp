@@ -138,6 +138,9 @@ jobs:
           zone: ${{secrets.ZONE}}
           source_image: ${{secrets.SOURCE_IMAGE}}
           project_id: ${{secrets.PROJECT_ID}}
+          AWS_DEMO_ACCEESS_KEY_ID: ${{secrets.AWS_DEMO_ACCEESS_KEY_ID}}
+          AWS_DEMO_SECRET_ACCESS_KEY: ${{secrets.AWS_DEMO_SECRET_ACCESS_KEY}}
+
         run: |
           cat <<EOF > tj.pkrvars.hcl
           DATABASE_USERNAME = "$DATABASE_USERNAME"
@@ -159,6 +162,8 @@ jobs:
           zone = "$zone"
           source_image = "$source_image"
           project_id = "$project_id"
+          AWS_DEMO_ACCEESS_KEY_ID = "AWS_DEMO_ACCEESS_KEY_ID"
+          AWS_DEMO_SECRET_ACCESS_KEY = "AWS_DEMO_SECRET_ACCESS_KEY"
           EOF
 
 
@@ -199,4 +204,49 @@ jobs:
 
       - name: ami create
         run: "packer build -var-file=tj.pkrvars.hcl ."
-          
+
+        
+      - name: Build AMI with Packer and extract AMI ID
+        id: ami_build
+        run: |
+          output=$(packer build -var-file=tj.pkrvars.hcl . | tee /dev/tty)
+          ami_id=$(echo "$output" | grep 'AMI:' | awk '{print $2}' | tail -n1)
+          echo "AMI_ID=$ami_id" >> $GITHUB_ENV
+          echo "::set-output name=ami_id::$ami_id"
+
+      - name: Update AWS Launch Template
+        run: |
+          aws ec2 create-launch-template-version \
+            --launch-template-name "${{ secrets.LAUNCH_TEMPLATE_NAME }}" \
+            --source-version 1 \
+            --version-description "Updated with new AMI" \
+            --launch-template-data "{\"ImageId\":\"${{ steps.ami_build.outputs.ami_id }}\"}"
+
+      - name: Start ASG Instance Refresh
+        id: refresh
+        run: |
+          refresh_id=$(aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name "${{ secrets.ASG_NAME }}" \
+            --preferences '{"MinHealthyPercentage": 50, "InstanceWarmup": 300}' \
+            --region $AWS_REGION \
+            --query 'InstanceRefreshId' --output text)
+          echo "REFRESH_ID=$refresh_id" >> $GITHUB_ENV
+          echo "::set-output name=refresh_id::$refresh_id"
+
+      - name: Wait for Instance Refresh
+        run: |
+          while true; do
+            status=$(aws autoscaling describe-instance-refreshes \
+              --auto-scaling-group-name "${{ secrets.ASG_NAME }}" \
+              --region $AWS_REGION \
+              --query "InstanceRefreshes[?InstanceRefreshId=='${{ steps.refresh.outputs.refresh_id }}'].Status" \
+              --output text)
+            echo "Current Refresh Status: $status"
+            if [[ "$status" == "Successful" ]]; then
+              exit 0
+            elif [[ "$status" == "Failed" || "$status" == "Cancelled" ]]; then
+              echo "Instance refresh failed or cancelled."
+              exit 1
+            fi
+            sleep 30
+          done    
