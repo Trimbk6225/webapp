@@ -203,7 +203,7 @@ jobs:
         run: "packer validate -var-file=tj.pkrvars.hcl ."
 
       - name: ami create
-        run: "packer build -var-file=tj.pkrvars.hcl ."
+        run: "packer build -force -var-file=tj.pkrvars.hcl ."
 
         
       - name: Build AMI with Packer and extract AMI ID
