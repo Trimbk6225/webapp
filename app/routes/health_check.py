@@ -24,7 +24,6 @@ def health_check():
         response = make_response("", 503)  # Service Unavailable
 
         webapp_logger.info("Health check performed")
-        
 
     # Add headers
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate;"
