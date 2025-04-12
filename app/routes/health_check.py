@@ -15,13 +15,13 @@ def health_check():
     if request.method != "GET":
         return make_response("", 405)
     if request.data or request.files:
-        return make_response("", 400)  # Bad Request
+        return make_response("", 400)  
 
     # Insert record
     if insert_health_check():
         response = make_response("", 200)
     else:
-        response = make_response("", 503)  # Service Unavailable
+        response = make_response("", 503)  
 
         webapp_logger.info("Health check performed")
 
@@ -40,37 +40,6 @@ def health_check():
 @health_check_blueprint.route("/healthz", methods=["HEAD","OPTIONS","POST", "PUT", "DELETE", "PATCH"])
 @log_request
 def method_not_allowed():
-    return make_response("", 405)  # Method Not Allowed
+    return make_response("", 405) 
 
 
-
-@health_check_blueprint.route("/cicd", methods=["GET"], provide_automatic_options=False)
-@log_request
-def cicd_check():
-    start_time = time.time()
-    increment_counter("api.get.calls")
-    if request.method != "GET":
-        return make_response("", 405)
-    if request.data or request.files:
-        return make_response("", 400)
-
-    if insert_health_check():
-        response = make_response("", 200)
-    else:
-        response = make_response("", 503)
-
-    webapp_logger.info("CI/CD health check performed")
-
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate;"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["X-Content-Type-Options"] = "nosniff"
-
-    duration = time.time() - start_time
-    record_timer("api.get_call.duration", duration)
-
-    return response
-
-@health_check_blueprint.route("/cicd", methods=["HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"])
-@log_request
-def cicd_method_not_allowed():
-    return make_response("", 405)
