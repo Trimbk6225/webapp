@@ -120,7 +120,6 @@ def handle_options_head_for_file():
     response.headers["Allow"] = "POST"
     return response
 
- Upload file with metadata
 @files_blueprint.route("/v2/file", methods=["POST"])
 @log_request
 def upload_file():
