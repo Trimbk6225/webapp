@@ -12,7 +12,7 @@ import time
 files_blueprint = Blueprint("files", __name__)
 
 # Modify the `upload_file` route in Files.py to include metadata
-@files_blueprint.route("/v1/file", methods=["POST"])
+@files_blueprint.route("/v2/file", methods=["POST"])
 @log_request
 def upload_file():
     start_time = time.time()
@@ -69,7 +69,7 @@ def upload_file():
         "upload_date": metadata_db.upload_time.strftime("%Y-%m-%d")
     }), 201
 
-@files_blueprint.route("/v1/file/<id>", methods=["GET"])
+@files_blueprint.route("/v2/file/<id>", methods=["GET"])
 @log_request
 def get_file(id):
     start_time = time.time()
@@ -90,7 +90,7 @@ def get_file(id):
         "upload_date": metadata.upload_time.strftime("%Y-%m-%d")
     }), 200
 
-@files_blueprint.route("/v1/file/<id>", methods=["DELETE"])
+@files_blueprint.route("/v2/file/<id>", methods=["DELETE"])
 @log_request
 def delete_file(id):
     start_time = time.time()
@@ -113,10 +113,11 @@ def delete_file(id):
 
     return "", 204
 
-@files_blueprint.route("/v1/file", methods=["OPTIONS", "HEAD","PUT", "PATCH","GET","DELETE"])
+@files_blueprint.route("/v2/file", methods=["OPTIONS", "HEAD","PUT", "PATCH","GET","DELETE"])
 @log_request
 def handle_options_head_for_file():
     response = make_response("", 405)
     response.headers["Allow"] = "POST"
     return response
+
 
